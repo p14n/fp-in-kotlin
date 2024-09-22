@@ -62,13 +62,14 @@ tailrec fun <A, B> foldLeft(xs: List<A>, z: B, f: (A, B) -> B): B =
             is Cons -> foldLeft(xs.tail, f(xs.head, z), f)
         }
 
-fun <A> append(xs: List<A>, x: A): List<A> =
-        /*foldLeft(
+fun <A> appendL(xs: List<A>, x: A): List<A> =
+        foldLeft(
                 foldLeft(xs, Cons(x, Nil), { v, a -> Cons(a.head, Cons(v, a.tail)) }),
                 empty(),
                 { v, a -> Cons(v, a) }
-        )*/
-        foldRight(xs, Cons(x, Nil), { v, a -> Cons(v, a) })
+        )
+
+fun <A> append(xs: List<A>, x: A): List<A> = foldRight(xs, Cons(x, Nil), { v, a -> Cons(v, a) })
 
 fun <A> concat(xs: List<List<A>>): List<A> =
         foldLeft(xs, empty(), { v1, a1 -> foldLeft(v1, a1, { v, a -> append(a, v) }) })
@@ -315,6 +316,16 @@ class ch03Test {
                 Cons(1, Cons(2, Cons(3, Cons(4, Nil)))),
                 result,
                 "Concat of [[1, 2], [3, 4]] should be [1, 2, 3, 4]"
+        )
+    }
+
+    @Test
+    fun testAppendL() {
+        val result = appendL(Cons(1, Cons(2, Cons(3, Nil))), 4)
+        assertEquals(
+                Cons(1, Cons(2, Cons(3, Cons(4, Nil)))),
+                result,
+                "Append 4 to [1, 2, 3] should be [1, 2, 3, 4]"
         )
     }
 
